@@ -3,10 +3,20 @@ import subprocess
 from typing import Dict
 
 """
-e.g.
-```
-python ./script/get_pubmed_xml.py --pm_query "working memory"
-```
+Command example:
+    ```
+    python ./script/get_pubmed_xml.py --pm_query "working memory"
+    ```
+
+Pre-requisite: Install ncbi-entrez-direct
+    (Dockerfile-syntax) script
+    ```
+    RUN apt-get update && \
+        DEBIAN_FRONTEND=noninteractive apt-get install -y gcc perl wget rsync libfftw3-dev && \
+        sh -c "$(wget -q https://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/install-edirect.sh -O -)"
+    RUN rsync -a /root/edirect/ /usr/local/edirect/ && rm -rf /root/edirect
+    ENV PATH="/usr/local/edirect:$PATH"
+    ```
 """
 
 def get_pubmed_xml(query: str) -> str:
