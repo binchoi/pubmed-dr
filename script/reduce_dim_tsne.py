@@ -1,6 +1,7 @@
 import joblib
 import numpy as np
 from sklearn.manifold import TSNE
+from sklearn.decomposition import PCA
 import umap # you may need to pip install umap-learn
 
 
@@ -30,6 +31,10 @@ def reduce_dim(path_embedding, method='opentsne'):
 
     elif method == 'umap':
         reducer = umap.UMAP()
+        embds_coordinates = reducer.fit_transform(embeddings)
+
+    elif method == 'pca':
+        reducer = PCA(n_components=2)
         embds_coordinates = reducer.fit_transform(embeddings)
 
     else:
