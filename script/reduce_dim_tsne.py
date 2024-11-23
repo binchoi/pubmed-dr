@@ -3,13 +3,14 @@ import numpy as np
 from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
 import umap # you may need to pip install umap-learn
+import os
 
 
-def reduce_dim(path_embedding, method='opentsne'):
+def reduce_dim(path_embedding, method='opentsne', n_jobs=8):
     '''
     Reduce the dim of the embeddings
     '''
-    path_embd = path_embd or path_embedding.replace('.embedding', '.embd.npy')
+    path_embd = path_embedding.replace('.embedding', '.embd.npy')
 
     # load the embeddings
     embeddings = joblib.load(path_embedding)
@@ -20,14 +21,12 @@ def reduce_dim(path_embedding, method='opentsne'):
         tsne = TSNE(
             perplexity=30,
             metric="cosine",
-            n_jobs=8,
-            verbose=True
+            n_jobs=n_jobs,
+            verbose=2 # more verbose than using True
         )
 
         # reduce the dim
-        embds = tsne.fit(embeddings)
-
-        embds_coordinates = embds[:, :2]
+        embds_coordinates = tsne.fit_transform(embeddings)
 
     elif method == 'umap':
         reducer = umap.UMAP()
@@ -45,7 +44,11 @@ def reduce_dim(path_embedding, method='opentsne'):
 
     np.save(path_embd, embds_coordinates)
 
-    print('* saved embds to %s' % path_embd)
+    if os.path.exists(path_embd):
+        print('* saved embds to %s' % path_embd)
+    else:
+        print('* error saving embds to %s' % path_embd)
+
     return path_embd
 
 
@@ -56,6 +59,7 @@ if __name__ == "__main__":
     )
 
     parser.add_argument('--path', default=None, type=str, help='Embeddings joblib dump file path')
+    parser.add_argument('--n_jobs', default=6, type=int, help='Number of CPU cores for t-SNE')
     args = parser.parse_args()
 
     reduce_dim(args.path)
