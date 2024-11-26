@@ -7,11 +7,11 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 
 
-def hdbscan_cluster(X, min_cluster_size=10, gen_min_span_tree=True, plot=1):
+def hdbscan_cluster(X, min_cluster_size=10, min_samples=15, gen_min_span_tree=True, plot=1):
     '''
     Cluster the embeddings by hdbscan
     '''
-    clusterer = hdbscan.HDBSCAN(min_cluster_size=min_cluster_size, 
+    clusterer = hdbscan.HDBSCAN(min_cluster_size=min_cluster_size, min_samples = min_samples, 
                                 gen_min_span_tree=gen_min_span_tree)
     cluster_labels = clusterer.fit_predict(X)
 
