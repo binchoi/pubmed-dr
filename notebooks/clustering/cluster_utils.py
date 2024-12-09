@@ -7,36 +7,52 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 
 
-def hdbscan_cluster(X, min_cluster_size=10, min_samples=15, gen_min_span_tree=True, plot=1):
+def hdbscan_cluster(X, min_cluster_size=10, min_samples=15, cluster_selection_epsilon=0.0,
+                    plot=1, dim3=False):
     '''
     Cluster the embeddings by hdbscan
     '''
     clusterer = hdbscan.HDBSCAN(min_cluster_size=min_cluster_size, min_samples = min_samples, 
-                                gen_min_span_tree=gen_min_span_tree)
+                                cluster_selection_epsilon=cluster_selection_epsilon)
     cluster_labels = clusterer.fit_predict(X)
 
     if plot:
-        plt.figure(figsize=(10, 6))
-        plt.scatter(X[:, 0], X[:, 1], c=cluster_labels, cmap='viridis', s=1, alpha=0.5)
-        plt.title(f'HDBSCAN Clustering with n={len(set(cluster_labels))} clusters')
-        plt.colorbar()
-        plt.show()
+        if dim3:
+            fig = plt.figure(figsize=(10, 6))
+            ax = fig.add_subplot(111, projection='3d')
+            ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=cluster_labels, cmap='viridis', s=1, alpha=0.5)
+            ax.set_title(f'HDBSCAN Clustering with n={len(set(cluster_labels))} clusters')
+            # plt.colorbar()
+            plt.show()
+        else:
+            plt.figure(figsize=(10, 6))
+            plt.scatter(X[:, 0], X[:, 1], c=cluster_labels, cmap='viridis', s=1, alpha=0.5)
+            plt.title(f'HDBSCAN Clustering with n={len(set(cluster_labels))} clusters')
+            plt.colorbar()
+            plt.show()
 
     return cluster_labels
 
 
-def kmeans_cluster(X, n_clusters=8, plot=1):
+def kmeans_cluster(X, n_clusters=8, plot=1, dim3=False):
     kmeans = KMeans(n_clusters=n_clusters)
     kmeans.fit(X)
 
     if plot:
-        plt.figure(figsize=(10, 6))
-        plt.scatter(X[:, 0], X[:, 1], c=kmeans.labels_, cmap='viridis', s=1, alpha=0.7)
-        plt.title("K-means Clustering, k = " + str(n_clusters))
-        plt.xlabel("Dimension 1")
-        plt.ylabel("Dimension 2")
-        plt.colorbar()
-        plt.show()
+        if dim3:
+            fig = plt.figure(figsize=(10, 6))
+            ax = fig.add_subplot(111, projection='3d')
+            ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=kmeans.labels_, cmap='viridis', s=1, alpha=0.7)
+            ax.set_title("K-means Clustering, k = " + str(n_clusters))
+            plt.show()
+        else:
+            plt.figure(figsize=(10, 6))
+            plt.scatter(X[:, 0], X[:, 1], c=kmeans.labels_, cmap='viridis', s=1, alpha=0.7)
+            plt.title("K-means Clustering, k = " + str(n_clusters))
+            plt.xlabel("Dimension 1")
+            plt.ylabel("Dimension 2")
+            plt.colorbar()
+            plt.show()
     return kmeans.labels_
 
 
